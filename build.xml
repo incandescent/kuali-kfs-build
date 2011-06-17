@@ -1,0 +1,42 @@
+<!-- simple portable script that checks KFS out from SVN and builds it -->
+<project name="generic-kfs" default="build">
+  <property name="java.dir" location="java"/>
+  <property name="servers.dir" location="${java.dir}/servers"/>
+  <property name="kfs.release" value="3-0-1"/>
+  <property name="kfs.svn.base.url" value="https://test.kuali.org/svn/kfs"/>
+  <property name="kfs.svn.release.url" value="${kfs.svn.base.url}/branches/release"/>
+  <property name="kfs.svn.url" value="${kfs.svn.release.url}-${kfs.release}"/>
+  <property name="tc5.ver" value="5.5.16"/>
+  <property name="tc5.dir" value="apache-tomcat-${tc5.ver}"/>
+  <property name="tc5.file" value="${tc5.dir}.zip"/>
+  <property name="tc5.base.url" value="http://archive.apache.org/dist/tomcat/tomcat-5"/>
+
+  <available property="tomcat.downloaded" file="${java.dir}/${tc5.file}"/>
+  <available property="tomcat.unzipped" file="${servers.dir}/${tc5.dir}"/>
+
+  <target name="checkout-kfs">
+    <exec executable="svn">
+      <arg value="co"/>
+      <arg value="${kfs.svn.url}"/>
+      <arg value="kfs"/>
+    </exec>
+  </target>
+
+  <target name="download-tomcat" unless="tomcat.downloaded">
+    <get src="${tc5.base.url}/v${tc5.ver}/bin/${tc5.file}"
+         dest="${java.dir}/${tc5.file}"/>
+  </target>
+
+  <target name="unzip-tomcat" depends="download-tomcat" unless="tomcat.unzipped">
+    <unzip src="${java.dir}/${tc5.file}" dest="${servers.dir}"/>
+  </target>
+
+  <target name="build" depends="checkout-kfs, unzip-tomcat">
+    <ant dir="kfs">
+      <target name="clean"/>
+      <target name="dist"/>
+      <property name="shared.external.build.properties" value="../generic-kfs-build.properties"/>
+    </ant>
+    <jar destfile="kfs-generic.jar" basedir="kfs/build/war/WEB-INF/classes"/>
+  </target>
+</project>
