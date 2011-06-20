@@ -11,3 +11,4 @@ To build & install the KFS war and jar into your local Maven repo (`~/.m2/repo`)
 
     ant mvn-install
 
+**NOTE:** You should *not* have to edit `generic-kfs-build.properties`.  The idea here is that there is one *generic* KFS binary war which can subsequently be customized via the Maven [war overlay](http://maven.apache.org/plugins/maven-war-plugin/overlays.html) process.  See https://github.com/incandescent/incandescent-kfs for an example.
