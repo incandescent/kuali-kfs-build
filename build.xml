@@ -11,6 +11,11 @@
   <property name="tc5.file" value="${tc5.dir}.zip"/>
   <property name="tc5.base.url" value="http://archive.apache.org/dist/tomcat/tomcat-5"/>
 
+  <property name="groupId" value="com.incandescent"/>
+  <property name="warArtifactId" value="kfs-generic-war"/>
+  <property name="jarArtifactId" value="kfs-lib"/>
+  <property name="kfsMvnVer" value="3.0.1-0-SNAPSHOT"/>
+
   <available property="tomcat.downloaded" file="${java.dir}/${tc5.file}"/>
   <available property="tomcat.unzipped" file="${servers.dir}/${tc5.dir}"/>
 
@@ -37,6 +42,26 @@
       <target name="dist"/>
       <property name="shared.external.build.properties" value="../generic-kfs-build.properties"/>
     </ant>
-    <jar destfile="kfs-generic.jar" basedir="kfs/build/war/WEB-INF/classes"/>
+    <jar destfile="kfs-lib.jar" basedir="kfs/build/war/WEB-INF/classes"/>
+  </target>
+
+  <target name="mvn-install" depends="build">
+    <exec executable="mvn">
+      <arg value="install:install-file"/>
+      <arg value="-Dfile=kfs-generic.war"/>
+      <arg value="-DgroupId=${groupId}"/>
+      <arg value="-DartifactId=${warArtifactId}"/>
+      <arg value="-Dversion=${kfsMvnVer}"/>
+      <arg value="-Dpackaging=war"/>
+    </exec>
+    <exec executable="mvn">
+      <arg value="install:install-file"/>
+      <arg value="-Dfile=kfs-lib.jar"/>
+      <arg value="-DgroupId=${groupId}"/>
+      <arg value="-DartifactId=${jarArtifactId}"/>
+      <arg value="-Dversion=${kfsMvnVer}"/>
+      <arg value="-Dpackaging=jar"/>
+    </exec>
+
   </target>
 </project>
